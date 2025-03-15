@@ -88,12 +88,20 @@ WHERE genre IN ('Sci-Fi', 'Action')
   );
 
 SELECT * FROM movie_list
-WHERE genre='Sci-Fi' 
-AND release_year > (SELECT AVG(release_year) FROM movie_list WHERE genre='Action');
+WHERE genre = 'Sci-Fi'
+  AND release_year > (
+    SELECT AVG(release_year)
+    FROM movie_list
+    WHERE genre = 'Action'
+  );
 
 SELECT * FROM movie_list
-WHERE genre!='Action'
-AND release_year=(SELECT MIN(release_year) FROM movie_list WHERE genre='Action');
+WHERE genre != 'Action'
+  AND release_year = (
+    SELECT MIN(release_year)
+    FROM movie_list
+    WHERE genre = 'Action'
+  );
 
 SELECT * FROM movie_list;
 
