@@ -28,7 +28,7 @@ SELECT * FROM movie_list
 WHERE release_year > 2010;
 
 SELECT * FROM movie_list
-WHERE genre = 'Action' or genre = 'Sci-Fi'
+WHERE genre = 'Action' OR genre = 'Sci-Fi'
 
 SELECT * FROM movie_list
 WHERE title LIKE 'The%'
