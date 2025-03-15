@@ -79,8 +79,13 @@ ORDER BY release_year DESC
 LIMIT 1;
 
 SELECT * FROM movie_list
-WHERE genre in ('Sci-Fi','Action')
-AND release_year in (SELECT release_year FROM movie_list WHERE genre='Drama' AND release_year IS NOT NULL);
+WHERE genre IN ('Sci-Fi', 'Action')
+  AND release_year IN (
+    SELECT release_year
+    FROM movie_list
+    WHERE genre = 'Drama'
+      AND release_year IS NOT NULL
+  );
 
 SELECT * FROM movie_list
 WHERE genre='Sci-Fi' 
