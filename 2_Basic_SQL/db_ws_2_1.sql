@@ -146,12 +146,14 @@ WHERE release_year=(
     )
 ORDER BY release_year,title;
 
-SELECT * FROM movie_list
-WHERE genre in ('Sci-Fi','Action') AND release_year in (
-        SELECT release_year
-        FROM movie_list
-        WHERE genre='Drama'
-        )
+SELECT *
+FROM movie_list
+WHERE genre IN ('Sci-Fi', 'Action')
+  AND release_year IN (
+    SELECT release_year
+    FROM movie_list
+    WHERE genre = 'Drama'
+  )
 ORDER BY release_year;
 
 SELECT * FROM movie_list;
