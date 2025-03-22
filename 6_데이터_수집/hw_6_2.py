@@ -20,7 +20,8 @@ def get_bus_data(date):
         pandas.DataFrame: 버스 데이터가 저장된 데이터프레임
     """
     # API URL 구성 (날짜별 버스 데이터 요청)
-    url = f"{BUS_URL}{BUS_API_KEY}/xml/CardBusStatisticsServiceNew/1/1000/{date}"  # ( BUS_URL과 BUS_API_KEY, date를 이용하여 API 요청 URL 생성)
+    # (BUS_URL과 BUS_API_KEY, date를 이용하여 API 요청 URL 생성)
+    url = f"{BUS_URL}{BUS_API_KEY}/xml/CardBusStatisticsServiceNew/1/1000/{date}"
 
     # API 요청을 보냄
     response = requests.get(url)  # (빈칸 채우기: requests 라이브러리를 사용하여 GET 요청 보내기)
@@ -39,11 +40,16 @@ def get_bus_data(date):
     # XML에서 <row> 태그를 찾아 각 데이터 항목을 추출
     for row in root.findall('.//row'):
         bus_data.append({
-            '날짜': row.find('USE_YMD').text if row.find('USE_YMD') is not None else '',  # 사용일자
-            '노선번호': row.find('RTE_NM').text if row.find('RTE_NM') is not None else '',  # (빈칸 채우기: row에서 'RTE_NM' 태그의 텍스트 추출)
-            '정류장명': row.find('STTN_NM').text if row.find('STTN_NM') is not None else '',  # (빈칸 채우기: row에서 'STTN_NM' 태그의 텍스트 추출)
-            '승차인원': int(row.find('GTON_TNOPE').text) if row.find('GTON_TNOPE') is not None else 0,  # 승차 인원
-            '하차인원': int(row.find('GTOFF_TNOPE').text) if row.find('GTOFF_TNOPE') is not None else 0  # 하차 인원
+            # 사용일자
+            '날짜': row.find('USE_YMD').text if row.find('USE_YMD') is not None else '',
+            # (빈칸 채우기: row에서 'RTE_NM' 태그의 텍스트 추출)
+            '노선번호': row.find('RTE_NM').text if row.find('RTE_NM') is not None else '',
+            # (빈칸 채우기: row에서 'STTN_NM' 태그의 텍스트 추출)
+            '정류장명': row.find('STTN_NM').text if row.find('STTN_NM') is not None else '',
+            # 승차 인원
+            '승차인원': int(row.find('GTON_TNOPE').text) if row.find('GTON_TNOPE') is not None else 0,
+            # 하차 인원
+            '하차인원': int(row.find('GTOFF_TNOPE').text) if row.find('GTOFF_TNOPE') is not None else 0
         })
 
     print(f"설명: {date} 날짜의 버스 데이터를 수집하여 리스트에 저장했습니다.")
@@ -57,7 +63,8 @@ def get_subway_data(date):
     주어진 날짜에 대한 서울시 지하철 승하차 데이터를 API에서 가져와 DataFrame으로 변환하는 함수
     """
     # API URL 구성 (날짜별 지하철 데이터 요청)
-    url = f"{SUBWAY_URL}{SUBWAY_API_KEY}/xml/CardBusStatisticsServiceNew/1/1000/{date}"  # (빈칸 채우기: SUBWAY_URL과 SUBWAY_API_KEY, date를 이용하여 API 요청 URL 생성)
+    # (빈칸 채우기: SUBWAY_URL과 SUBWAY_API_KEY, date를 이용하여 API 요청 URL 생성)
+    url = f"{SUBWAY_URL}{SUBWAY_API_KEY}/xml/CardBusStatisticsServiceNew/1/1000/{date}"
     
     # API 요청을 보냄
     response = requests.get(url)  # (빈칸 채우기: requests 라이브러리를 사용하여 GET 요청 보내기)
@@ -78,9 +85,11 @@ def get_subway_data(date):
         subway_data.append({
             '날짜': row.find('USE_YMD').text if row.find('USE_YMD') is not None else '',  
             '노선번호': row.find('SBWY_ROUT_LN_NM').text if row.find('SBWY_ROUT_LN_NM') is not None else '',  
-            '역명': row.find('SBWY_STNS_NM').text if row.find('SBWY_STNS_NM') is not None else '',  # (빈칸 채우기: row에서 'SBWY_STNS_NM' 태그의 텍스트 추출)
+            # (빈칸 채우기: row에서 'SBWY_STNS_NM' 태그의 텍스트 추출)
+            '역명': row.find('SBWY_STNS_NM').text if row.find('SBWY_STNS_NM') is not None else '',
             '승차인원': int(row.find('GTON_TNOPE').text) if row.find('GTON_TNOPE') is not None else 0,  
-            '하차인원': int(row.find('GTOFF_TNOPE').text) if row.find('GTOFF_TNOPE') is not None else 0 # (빈칸 채우기: row에서 'GTOFF_TNOPE' 태그의 텍스트 추출 후 정수로 변환)
+            # (빈칸 채우기: row에서 'GTOFF_TNOPE' 태그의 텍스트 추출 후 정수로 변환)
+            '하차인원': int(row.find('GTOFF_TNOPE').text) if row.find('GTOFF_TNOPE') is not None else 0
         })
 
     print(f"설명: {date} 날짜의 지하철 데이터를 수집하여 리스트에 저장했습니다.")
@@ -97,8 +106,9 @@ def integrate_data(bus_data, subway_data):
     bus_data = bus_data.rename(columns={'정류장명': '역/정류장명'})
 
     # 지하철 데이터에 '교통수단' 컬럼 추가 후 '역명'을 '역/정류장명'으로 변경
+    # (빈칸 채우기: subway_data에서 '역명' 컬럼을 '역/정류장명'으로 변경)
     subway_data['교통수단'] = '지하철'
-    subway_data = subway_data.rename(columns={'역명': '역/정류장명'})  # (빈칸 채우기: subway_data에서 '역명' 컬럼을 '역/정류장명'으로 변경)
+    subway_data = subway_data.rename(columns={'역명': '역/정류장명'})
 
     # 두 데이터를 합치기
     integrated_df = pd.concat([bus_data, subway_data], ignore_index=True)
@@ -107,7 +117,9 @@ def integrate_data(bus_data, subway_data):
     print("답: 버스와 지하철 데이터가 통합되었습니다.")
     print(f"설명: 통합된 데이터의 컬럼은 {integrated_df.columns.tolist()} 입니다.")
 
-    return integrated_df[['교통수단', '날짜', '노선번호', '역/정류장명', '승차인원', '하차인원']]  # (빈칸 채우기: 최종적으로 '교통수단', '날짜', '노선번호', '역/정류장명', '승차인원', '하차인원' 컬럼만 포함한 데이터프레임 반환)
+    # (빈칸 채우기: 최종적으로 '교통수단', '날짜', '노선번호', 
+    #                    '역/정류장명', '승차인원', '하차인원' 컬럼만 포함한 데이터프레임 반환)
+    return integrated_df[['교통수단', '날짜', '노선번호', '역/정류장명', '승차인원', '하차인원']]
 
 def get_data_for_date_range(start_date, end_date):
     """
@@ -127,14 +139,18 @@ def get_data_for_date_range(start_date, end_date):
         date_str = current_date.strftime("%Y%m%d")
         print(f"\n설명: {date_str} 날짜의 데이터를 수집 중입니다.")
 
+        # 날짜에 맞는 버스와 지하철의 데이터를 호출
         bus_data = get_bus_data(date_str)
         subway_data = get_subway_data(date_str)
 
+        # 불러온 버스와 지하철의 데이터를 하나로 합침
         daily_data = integrate_data(bus_data, subway_data)
         all_data.append(daily_data)
 
         current_date += timedelta(days=1)
 
+    # 시작 날짜부터 끝나는 날짜까지의 버스와 지하철의 통합 데이터를
+    # 모두 하나의 데이터로 통합
     return pd.concat(all_data, ignore_index=True)
 
 def main():
