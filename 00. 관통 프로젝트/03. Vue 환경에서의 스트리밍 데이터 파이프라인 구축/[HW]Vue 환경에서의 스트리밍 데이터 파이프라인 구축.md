@@ -2,7 +2,15 @@
 
 📄 **초록(Abstract)**
 
-본 연구는 Kafka와 Apache Flink를 활용한 실시간 뉴스 데이터 스트리밍 파이프라인의 설계 및 구현을 통해, 대용량 뉴스 데이터를 자동 수집·분석·저장하는 엔드 투 엔드 처리 구조를 제안한다. 뉴스 데이터는 RSS 피드로부터 실시간으로 수집되며, Kafka Producer를 통해 메시지 큐에 전송된다. 이후 Flink 기반 Kafka Consumer가 해당 데이터를 스트림 형태로 소비하고, OpenAI의 GPT 모델을 활용하여 주요 키워드 추출, 의미 기반 임베딩 생성, 카테고리 분류 등 자연어 기반 전처리를 수행한다. 전처리된 결과는 PostgreSQL에 저장되어 추후 검색, 시각화, 인사이트 도출 등 다양한 응용이 가능하다. 본 시스템은 실시간성과 확장성을 모두 고려한 구조로 설계되었으며, 데이터 수집에서부터 AI 기반 분석, 저장까지의 흐름을 자동화함으로써, 뉴스 데이터의 실시간 활용 가능성을 높이고 정보 기반 의사결정의 정밀도를 향상시키는 데 기여할 수 있다.
+본 연구는 Kafka와 Apache Flink를 활용한 실시간 뉴스 데이터 스트리밍 파이프라인의 설계 및 구현을 통해,           
+대용량 뉴스 데이터를 자동 수집·분석·저장하는 엔드 투 엔드 처리 구조를 제안한다.           
+뉴스 데이터는 RSS 피드로부터 실시간으로 수집되며, Kafka Producer를 통해 메시지 큐에 전송된다.           
+이후 Flink 기반 Kafka Consumer가 해당 데이터를 스트림 형태로 소비하고,              
+OpenAI의 GPT 모델을 활용하여 주요 키워드 추출, 의미 기반 임베딩 생성, 카테고리 분류 등 자연어 기반 전처리를 수행한다.            
+전처리된 결과는 PostgreSQL에 저장되어 추후 검색, 시각화, 인사이트 도출 등 다양한 응용이 가능하다.                   
+본 시스템은 **실시간성과 확장성을 모두 고려한 구조**로 설계되었으며,            
+데이터 수집에서부터 AI 기반 분석, 저장까지의 흐름을 자동화함으로써,                 
+뉴스 데이터의 실시간 활용 가능성을 높이고 정보 기반 의사결정의 정밀도를 향상시키는 데 기여할 수 있다.
 
 ### ✅ 전체 구성
 
@@ -22,7 +30,6 @@
 
 **Kafka + Flink를 활용한 실시간 뉴스 스트리밍 데이터 파이프라인 구축**
 
-<br>
 
 💡 실습 개요
 --------
@@ -35,7 +42,6 @@
 이러한 실습은 **데이터 엔지니어링, 실시간 분석 시스템, 자연어 처리 기반 뉴스 분석 서비스**를 위한  
 핵심 기초 설계 역량을 길러주는 데 목적이 있다.
 
-<br>
 
 🎯 학습 목적
 --------
@@ -51,7 +57,6 @@
 *   **최종적으로 정제된 데이터를 PostgreSQL에 저장**하는 전 과정을 이해 및 구현
     
 
-<br>
 
 📌 실습을 통해 배우는 핵심 역량
 -------------------
@@ -64,37 +69,37 @@
 | AI 기반 전처리 적용       | GPT API 기반 키워드 추출, 임베딩, 카테고리 분류 경험           |
 | 데이터베이스 연동 및 저장 | 처리된 결과를 PostgreSQL에 저장하는 실무 수준의 저장 로직 구현 |
 
-<br>
 
 🏗️ 전체 시스템 아키텍처
 ---------------
 
 ```
 ┌────────────────────┐
-│   RSS 뉴스 피드     │
+│   RSS 뉴스 피드      │
 └────────┬───────────┘
          │
          ▼
 ┌────────────────────┐
-│ Kafka Producer      │
+│ Kafka Producer     │
 │ (rss_producer_test)│
 └────────┬───────────┘
          ▼
 ┌────────────────────┐
-│   Kafka Broker      │
+│   Kafka Broker     │
 │    (토픽: news)     │
 └────────┬───────────┘
          ▼
-┌────────────────────────────┐
-│ Flink Kafka Consumer        │
-│ (consumer_flink + preprocess)│
-└────────┬───────────────────┘
+┌───────────────────────────────┐
+│      Flink Kafka Consumer     │
+│ (consumer_flink + preprocess) │
+└────────┬──────────────────────┘
          ▼
-┌────────────────────────────┐
+┌────────────────────────────────┐
 │ PostgreSQL (news_article 테이블) │
-└────────────────────────────┘
+└────────────────────────────────┘
 ```
 
+<br>
 <br>
 
 🛠️ 2. 코드 구조 및 흐름 해설 + 실행 결과 예시 및 해설
@@ -111,7 +116,6 @@
 | 2단계 | Kafka에서 실시간 메시지를 Flink가 수신 및 처리            | `consumer_flink.py`    |
 | 3단계 | 뉴스 본문 분석 및 DB 저장 (키워드, 임베딩, 카테고리 포함) | `preprocess.py`        |
 
-<br>
 
 🔁 각 코드 흐름 상세 설명
 ----------------
@@ -159,7 +163,6 @@
 *   각 뉴스 콘텐츠에 대해 OpenAI 기반 전처리 실행
     
 *   DB 저장은 psycopg2 라이브러리를 이용한 SQL 실행 방식
-    
 
 <br>
 
@@ -181,7 +184,6 @@
 *   모든 응답은 GPT API 사용 → 결과의 품질이 NLP보다 높음
     
 *   잘못된 응답에 대한 fallback 처리: 카테고리 목록에 없으면 `"미분류"`
-    
 
 <br>
 
@@ -207,6 +209,7 @@
 [처리 오류] JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 [DB 오류] duplicate key value violates unique constraint ...
 ```
+
 <br>
 
 ⚙️ 3. 전체 코드 + 상세 주석
@@ -330,6 +333,7 @@ if __name__ == "__main__":
     main()
 ```
 
+<br>
 
 📄 \[2\] `consumer_flink.py`
 ----------------------------
@@ -337,7 +341,6 @@ if __name__ == "__main__":
 **Kafka 메시지를 실시간 수신하여 전처리하고, DB에 저장하는 Flink 기반 Consumer 코드**  
 전체 코드 + 줄별 상세 주석을 제공할게.
 
-* * *
 
 ```python
 # Flink 스트리밍 환경 구성 관련 라이브러리
@@ -455,6 +458,7 @@ stream.map(process_and_save)
 env.execute("Flink Kafka Consumer Job")
 ```
 
+<br>
 
 📄 \[3\] `preprocess.py`
 ------------------------
@@ -462,7 +466,6 @@ env.execute("Flink Kafka Consumer Job")
 **뉴스 본문을 GPT 기반으로 전처리하여 키워드, 임베딩, 카테고리를 생성하는 모듈**  
 전체 코드와 줄마다 상세 주석을 정리해줄게.
 
-* * *
 
 ```python
 # OpenAI API 사용을 위한 라이브러리
@@ -471,7 +474,6 @@ from dotenv import load_dotenv
 load_dotenv()  # .env에 저장된 API 키 로드
 ```
 
-* * *
 
 ### 🔹 `preprocess_content()`: 토큰 수 제한 처리
 
@@ -498,7 +500,6 @@ def preprocess_content(content):
     return content
 ```
 
-* * *
 
 ### 🔹 `transform_extract_keywords()`: 키워드 5개 추출
 
@@ -583,6 +584,7 @@ def transform_classify_category(content):
 ```
 
 <br>
+<br>
 
 📚 4. 추가 설명 및 실무 팁
 ==================
@@ -605,7 +607,6 @@ def transform_classify_category(content):
     *   방화벽/보안 설정 확인 (특히 WSL2 환경에서는 별도 포트 포워딩 필요할 수 있음)
         
 
-* * *
 
 ### 2\. 📦 **Kafka Connector JAR 경로 오류 (Flink)**
 
@@ -620,7 +621,6 @@ def transform_classify_category(content):
     *   Flink 버전에 맞는 Kafka Connector JAR 사용 필수 (예: Flink 1.20 → 1.20 전용 JAR 필요)
         
 
-* * *
 
 ### 3\. 🔐 **OpenAI API Key 오류**
 
@@ -635,7 +635,6 @@ def transform_classify_category(content):
     *   GPT 요청 시 `max_tokens`를 너무 크게 설정하면 요금 폭탄 주의
         
 
-* * *
 
 ### 4\. 🧠 **Flink에서 `map()` 함수가 실행되지 않는 경우**
 
@@ -646,8 +645,7 @@ def transform_classify_category(content):
 *   **해결 방법**: `env.execute("Job Name")`가 반드시 있어야 함  
     → 없으면 아무 것도 실행되지 않음
     
-
-* * *
+<br>
 
 🛠️ 실무 적용 팁
 -----------
@@ -660,7 +658,6 @@ def transform_classify_category(content):
 | 임베딩        | `text-embedding-3-small` | `text-embedding-3-large`, SBERT, KoBERT 적용 가능       |
 | 카테고리 분류 | 프롬프트 기반 GPT 분류   | 파인튜닝 모델, XGBoost, 로지스틱 회귀 등 모델 적용 가능 |
 
-* * *
 
 ### 💾 PostgreSQL 활용 팁
 
@@ -675,7 +672,6 @@ def transform_classify_category(content):
     *   향후 `SELECT * FROM news_article ORDER BY embedding <-> :query_vector LIMIT 5` 가능
         
 
-* * *
 
 ### 🌐 Kafka 실시간 파이프라인 확장 방안
 
@@ -686,7 +682,7 @@ def transform_classify_category(content):
 | Downstream     | Elasticsearch + Kibana로 시각화 대시보드 구성   |
 | 알림 시스템    | Slack, Email 등으로 실시간 요약 전송 가능       |
 
-* * *
+<br>
 
 🚀 추천 심화 방향
 -----------
@@ -698,7 +694,7 @@ def transform_classify_category(content):
 | LangChain + Vector Search | GPT 연동 Q&A 시스템으로 확장                     |
 | Kafka Streams             | Kafka 내장 스트리밍 처리 프레임워크 (Flink 대안) |
 
-* * *
+<br>
 
 🧾 마무리 요약
 ---------
