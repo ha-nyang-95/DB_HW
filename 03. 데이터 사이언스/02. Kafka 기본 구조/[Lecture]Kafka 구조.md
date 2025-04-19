@@ -481,8 +481,8 @@ graph TD
     A --> E[Segment 2.log]
     E --> F[...추가 메시지들]
 
-    B --> G[Offset 0: "Login"]
-    B --> H[Offset 1: "Click"]
+    B --> G[Offset 0: Login]
+    B --> H[Offset 1: Click]
 ```
 
 <br>
@@ -583,9 +583,9 @@ Kafka 클러스터 내에는 특별한 역할을 하는 **Controller Broker**가
 
 ```mermaid
 graph LR
-    A[Partition 0 (Topic A)] --> B[Broker 1 (Leader)]
-    A --> C[Broker 2 (Follower)]
-    A --> D[Broker 3 (Follower)]
+    A[Partition 0 - Topic A] --> B[Broker 1 - Leader]
+    A --> C[Broker 2 - Follower]
+    A --> D[Broker 3 - Follower]
 
     B --복제--> C
     B --복제--> D
