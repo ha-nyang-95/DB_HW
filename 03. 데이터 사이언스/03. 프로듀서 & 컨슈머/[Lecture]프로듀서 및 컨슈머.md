@@ -85,9 +85,29 @@ Kafka에서 Producer가 전송하는 기본 단위는 **ProducerRecord**라고 �
 
 #### ✅ 예시 코드 (Java 기반)
 
-```java
-ProducerRecord<String, String> record = 
-    new ProducerRecord<>("user-logs", "user123", "login_success");
+```python
+from confluent_kafka import Producer
+
+# 콜백 함수: 전송 결과 확인
+def delivery_report(err, msg):
+    if err is not None:
+        print(f"❌ 메시지 전송 실패: {err}")
+    else:
+        print(f"✅ 전송 성공: {msg.key().decode()} -> {msg.value().decode()}")
+
+# Producer 인스턴스 생성
+producer = Producer({'bootstrap.servers': 'localhost:9092'})
+
+# 메시지 생성 및 전송
+producer.produce(
+    topic='user-logs',
+    key='user123',
+    value='login_success',
+    callback=delivery_report
+)
+
+# 버퍼 비우기 (전송 보장)
+producer.flush()
 ```
 
 이 코드는 "user-logs"라는 토픽에 `"user123"`이라는 키와 `"login_success"`라는 값을 갖는 메시지를 생성하는 예시이다. 이 키를 기준으로 Kafka는 파티션을 자동 선택하거나 지정된 로직을 적용한다.
@@ -104,7 +124,7 @@ graph TD
 
 ### 1.3.2 메시지 직렬화 (Serialization)
 
-Kafka는 내부적으로 바이트 배열(byte\[\]) 형태의 데이터를 주고받기 때문에, 사용자가 정의한 구조체나 문자열, JSON 등을 Kafka가 이해할 수 있는 형태로 변환해야 한다. 이 과정을 \*\*직렬화(Serialization)\*\*라고 한다.
+Kafka는 내부적으로 바이트 배열(byte\[\]) 형태의 데이터를 주고받기 때문에, 사용자가 정의한 구조체나 문자열, JSON 등을 Kafka가 이해할 수 있는 형태로 변환해야 한다. 이 과정을 **직렬화(Serialization)** 라고 한다.
 
 Kafka Producer는 다음과 같은 직렬화 인터페이스를 제공한다:
 
@@ -258,7 +278,7 @@ Kafka는 네트워크 장애, 리더 브로커 변경 등의 상황에서도 메
 
 #### ✅ 멱등성(Idempotence)이란?
 
-컴퓨팅에서 \*멱등성(idempotency)\*은 **같은 작업을 여러 번 수행해도 결과가 한 번 수행한 것과 같음**을 의미한다. Kafka에서는 이것이 **중복 메시지를 자동으로 제거**하는 기능으로 구현된다.
+컴퓨팅에서 *멱등성(idempotency)* 은 **같은 작업을 여러 번 수행해도 결과가 한 번 수행한 것과 같음**을 의미한다. Kafka에서는 이것이 **중복 메시지를 자동으로 제거**하는 기능으로 구현된다.
 
 Kafka의 멱등성 기능은 아래의 두 가지 정보를 조합하여 중복 여부를 판단한다:
 
@@ -292,7 +312,7 @@ Kafka의 멱등성 기능은 아래의 두 가지 정보를 조합하여 중복 
 
 ### 1.5.2 트랜잭션 프로듀서 (Transactional Producer)
 
-Kafka는 멱등성에서 한 발 더 나아가, 복잡한 데이터 처리 환경에서도 \*\*완전한 "Exactly Once Semantics" (EOS)\*\*를 구현하기 위해 **트랜잭션** 기능을 제공한다.
+Kafka는 멱등성에서 한 발 더 나아가, 복잡한 데이터 처리 환경에서도 **완전한 "Exactly Once Semantics" (EOS)** 를 구현하기 위해 **트랜잭션** 기능을 제공한다.
 
 #### ✅ Kafka 트랜잭션이란?
 
@@ -300,7 +320,7 @@ Kafka는 멱등성에서 한 발 더 나아가, 복잡한 데이터 처리 환�
 
 Kafka 트랜잭션은 아래와 같은 상황을 보장한다:
 
-*   여러 메시지가 \*\*원자적(atomic)\*\*으로 처리됨
+*   여러 메시지가 **원자적(atomic)** 으로 처리됨
     
 *   Consumer는 **트랜잭션이 완료된 메시지만** 읽을 수 있음
     
@@ -371,7 +391,7 @@ Kafka는 이처럼 신뢰성과 정합성을 강화하기 위한 기능을 지�
 
 Kafka Consumer는 **Kafka Broker로부터 데이터를 읽어오는 컴포넌트**이다. Kafka의 핵심 구조는 ‘데이터를 보내는 Producer’와 ‘데이터를 받아 가공하거나 저장하는 Consumer’로 구성되어 있으며, 이 둘은 **Topic을 중심으로 간접적으로 연결**되어 있다.
 
-Producer가 전송한 메시지는 Kafka 내부의 Topic에 저장되고, Consumer는 특정 Topic에 접근하여 데이터를 차례로 읽어간다. 이 과정에서 Kafka는 데이터를 **삭제하지 않고 보존**하므로, Consumer는 자신만의 속도로 데이터를 읽을 수 있으며, \*\*오프셋(offset)\*\*을 기준으로 **데이터를 반복 소비하거나 이어서 소비하는 것이 가능**하다.
+Producer가 전송한 메시지는 Kafka 내부의 Topic에 저장되고, Consumer는 특정 Topic에 접근하여 데이터를 차례로 읽어간다. 이 과정에서 Kafka는 데이터를 **삭제하지 않고 보존**하므로, Consumer는 자신만의 속도로 데이터를 읽을 수 있으며, **오프셋(offset)** 을 기준으로 **데이터를 반복 소비하거나 이어서 소비하는 것이 가능**하다.
 
 Kafka Consumer의 특징을 간단히 요약하면 다음과 같다:
 
@@ -450,7 +470,7 @@ Kafka는 단일 Consumer가 모든 데이터를 처리하는 방식이 아닌, �
 
 ```mermaid
 graph TD
-    A[Topic (3 Partitions)] --> P0[Partition 0]
+    A["Topic (3 Partitions)"] --> P0[Partition 0]
     A --> P1[Partition 1]
     A --> P2[Partition 2]
 
@@ -485,7 +505,7 @@ graph TD
 
 ### 2.4.2 파티션과 병렬성
 
-Kafka는 Topic을 여러 개의 \*\*파티션(Partition)\*\*으로 나누어 저장하며, 이는 병렬 처리를 위한 핵심 단위이다. 이 구조를 통해 Kafka는 다음과 같은 장점을 가진다:
+Kafka는 Topic을 여러 개의 **파티션(Partition)** 으로 나누어 저장하며, 이는 병렬 처리를 위한 핵심 단위이다. 이 구조를 통해 Kafka는 다음과 같은 장점을 가진다:
 
 *   **데이터 병렬 처리**: 파티션이 많을수록 동시에 여러 Consumer가 데이터를 읽을 수 있음
     
@@ -517,7 +537,7 @@ Kafka 클러스터는 각 Consumer Group을 관리하기 위해 **Group Coordina
 
 *   Group Coordinator는 해당 Consumer Group의 상태를 추적한다.
     
-*   Consumer가 그룹에 참여하거나 나갈 때, Coordinator는 \*\*파티션 재분배(Rebalance)\*\*를 실행한다.
+*   Consumer가 그룹에 참여하거나 나갈 때, Coordinator는 **파티션 재분배(Rebalance)** 를 실행한다.
     
 *   모든 파티션 할당 결과는 **Group Metadata**로 관리되며, Consumer는 이를 통해 자신의 역할을 파악한다.
     
@@ -594,7 +614,7 @@ Rebalance는 Kafka가 자동으로 처리하지만, 이 과정 동안에는 다�
 *   Consumer는 재할당된 파티션을 기준으로 다시 데이터를 읽기 시작
     
 
-> 💡 Rebalance는 Kafka의 \*\*동적 확장성과 내결함성(fault-tolerance)\*\*을 가능케 하지만, **지나치게 자주 발생하면 지연과 부하**의 원인이 되므로 관리가 필요하다.
+> 💡 Rebalance는 Kafka의 **동적 확장성과 내결함성(fault-tolerance)** 을 가능케 하지만, **지나치게 자주 발생하면 지연과 부하**의 원인이 되므로 관리가 필요하다.
 
 <br>
 
@@ -639,7 +659,7 @@ Kafka의 Rebalance는 다음과 같은 단계로 이루어진다:
     Consumer 중 하나를 리더로 선정하여 파티션 할당 전략을 위임한다.
     
 3.  **파티션 재할당 수행**  
-    리더는 전체 Consumer와 파티션 정보를 바탕으로, \*\*할당 전략(Sticky, Range 등)\*\*에 따라 매핑을 계산한다.
+    리더는 전체 Consumer와 파티션 정보를 바탕으로, **할당 전략(Sticky, Range 등)** 에 따라 매핑을 계산한다.
     
 4.  **할당 결과 전파**  
     Group Coordinator가 각 Consumer에게 할당 결과를 전달한다.
