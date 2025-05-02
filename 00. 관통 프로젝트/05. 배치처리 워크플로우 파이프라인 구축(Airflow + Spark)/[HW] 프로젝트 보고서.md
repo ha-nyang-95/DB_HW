@@ -195,7 +195,7 @@ Kafka로 송신된 뉴스 데이터를 Flink를 통해 실시간으로 수신하
 
 ```mermaid
 flowchart TD
-A['Kafka (news) 토픽'] --> B[FlinkKafkaConsumer 수신]
+A["Kafka (news) 토픽"] --> B[FlinkKafkaConsumer 수신]
 B --> C["process_and_save() → JSON 파싱"]
 C --> D1["GPT-4o로 키워드/카테고리 분류"]
 C --> D2[임베딩 벡터화]
