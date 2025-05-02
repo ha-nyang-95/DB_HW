@@ -120,7 +120,7 @@ graph TD
 A[매일경제 RSS 페이지 접속] --> B["RSS 링크 목록 수집 (scrape_link.py)"]
 B --> C[feedparser로 기사 메타데이터 파싱]
 C --> D["기사 본문, 기자 정보 크롤링 (BeautifulSoup)"]
-D --> E['뉴스 객체 생성 → Kafka "news" 토픽 전송']
+D --> E[뉴스 객체 생성 → Kafka "news" 토픽 전송]
 ```
 
 * * *
