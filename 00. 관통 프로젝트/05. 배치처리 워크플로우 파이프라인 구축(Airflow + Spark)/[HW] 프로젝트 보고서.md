@@ -120,7 +120,7 @@ graph TD
 A[매일경제 RSS 페이지 접속] --> B["RSS 링크 목록 수집 (scrape_link.py)"]
 B --> C[feedparser로 기사 메타데이터 파싱]
 C --> D["기사 본문, 기자 정보 크롤링 (BeautifulSoup)"]
-D --> E[뉴스 객체 생성 → Kafka "news" 토픽 전송]
+D --> E["뉴스 객체 생성 → Kafka (news) 토픽 전송"]
 ```
 
 * * *
@@ -195,7 +195,7 @@ Kafka로 송신된 뉴스 데이터를 Flink를 통해 실시간으로 수신하
 
 ```mermaid
 flowchart TD
-A['Kafka "news" 토픽'] --> B[FlinkKafkaConsumer 수신]
+A['Kafka (news) 토픽'] --> B[FlinkKafkaConsumer 수신]
 B --> C["process_and_save() → JSON 파싱"]
 C --> D1["GPT-4o로 키워드/카테고리 분류"]
 C --> D2[임베딩 벡터화]
