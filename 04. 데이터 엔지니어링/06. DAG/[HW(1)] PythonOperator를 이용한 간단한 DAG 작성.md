@@ -161,10 +161,10 @@ Airflow UI나 CLI에서 DAG을 실행하거나 특정 날짜를 지정하여 실
 
 ```mermaid
 graph TD
-    A[Airflow Scheduler] --> B[Trigger DAG (6:30 매일)]
+    A[Airflow Scheduler] --> B["Trigger DAG (6:30 매일)"]
     B --> C[PythonOperator 실행]
-    C --> D[select_fruit() 함수 호출]
-    D --> E[과일 무작위 선택 및 출력 (로그 기록)]
+    C --> D["select_fruit() 함수 호출"]
+    D --> E["과일 무작위 선택 및 출력 (로그 기록)"]
 ```
 
 <br>

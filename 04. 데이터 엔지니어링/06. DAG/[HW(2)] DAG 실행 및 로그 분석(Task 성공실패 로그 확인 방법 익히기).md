@@ -160,11 +160,11 @@ Exception: 의도적인 실패 발생
 
 ```mermaid
 graph TD
-    A[Airflow Scheduler] --> B[9:00 DAG 실행]
-    B --> C[logging_task (PythonOperator)]
+    A[Airflow Scheduler] --> B["9:00 DAG 실행"]
+    B --> C["logging_task (PythonOperator)"]
     C --> D{랜덤 결과}
-    D -- 성공 --> E[INFO 로그 출력 + SUCCESS 상태]
-    D -- 실패 --> F[ERROR 로그 출력 + 예외 발생 + FAILED 상태]
+    D -- 성공 --> E["INFO 로그 출력 + SUCCESS 상태"]
+    D -- 실패 --> F["ERROR 로그 출력 + 예외 발생 + FAILED 상태"]
 ```
 
 <br>
