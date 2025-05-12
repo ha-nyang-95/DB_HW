@@ -11,7 +11,7 @@
 *   `mapPartitions()`과 같은 고급 연산의 **효율성**을 이해한다.
     
 
-* * *
+<br>
 
 📌 1. SparkContext 생성
 ---------------------
@@ -29,7 +29,7 @@ sc = SparkContext("local", "RDDOptimization")
 *   `"RDDOptimization"`은 애플리케이션 이름이다.
     
 
-* * *
+<br>
 
 📌 2. RDD 생성
 ------------
@@ -44,7 +44,7 @@ rdd = sc.parallelize(range(1, 1000001), num_partitions)
 *   여기서는 **1부터 1,000,000까지** 숫자를 가진 RDD를 생성함.
     
 
-* * *
+<br>
 
 📌 3. 시간 측정 함수
 --------------
@@ -60,7 +60,7 @@ def measure_time(fn):
 *   어떤 연산 함수 `fn`을 실행하고 **걸린 시간**을 측정해서 반환하는 유틸 함수.
     
 
-* * *
+<br>
 
 📌 4. map + filter 방식
 ---------------------
@@ -93,7 +93,7 @@ rdd.filter(lambda x: x % 2 == 0).map(lambda x: x * 2).collect()
 *   각 요소에 대해 두 번의 함수 호출이 필요함 (함수 호출 비용)
     
 
-* * *
+<br>
 
 📌 5. flatMap 방식
 ----------------
@@ -128,7 +128,7 @@ rdd.flatMap(lambda x: [x * 2] if x % 2 == 0 else []).collect()
 *   처리 속도 개선
     
 
-* * *
+<br>
 
 📌 6. mapPartitions 방식
 ----------------------
@@ -164,7 +164,7 @@ rdd.mapPartitions(transform_partition).collect()
 *   메모리 사용과 CPU 호출이 감소 → 속도 개선
     
 
-* * *
+<br>
 
 📌 7. 전체 코드
 ----------------------
@@ -217,7 +217,8 @@ print("[mapPartitions] 개수:", len(mappart_result))
 print("[mapPartitions] 샘플:", mappart_result[:5])
 print("[mapPartitions] 시간:", round(t3, 4), "초")
 ```
-* * *
+
+<br>
 
 📊 성능 비교 요약표
 ------------
@@ -228,7 +229,7 @@ print("[mapPartitions] 시간:", round(t3, 4), "초")
 | `flatMap`       | 요소 단위로 1단계 통합 처리 | 1회/요소     | 효율적, 빠름      | 가독성이 살짝 낮을 수 있음 | 0.84초           |
 | `mapPartitions` | 파티션 단위로 일괄 처리     | 1회/파티션   | 가장 빠름, 고성능 | 복잡한 로직 구현 시 주의   | 0.77초           |
 
-* * *
+<br>
 
 🧠 핵심 개념 요약
 -----------
@@ -241,7 +242,7 @@ print("[mapPartitions] 시간:", round(t3, 4), "초")
 | **mapPartitions()** | 파티션 단위로 데이터를 처리하는 고성능 연산                   |
 | **collect()**       | 전체 데이터를 드라이버로 수집 (주의: 메모리 초과 가능성 있음) |
 
-* * *
+<br>
 
 ✅ 실습을 통해 배운 점
 -------------
