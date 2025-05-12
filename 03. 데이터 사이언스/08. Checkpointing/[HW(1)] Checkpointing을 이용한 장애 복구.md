@@ -1,51 +1,23 @@
-# 실습 정리본 작성 요청
-
-**User:** 장철환(하냥) (wkdcjfghks1@gmail.com)  
-**Created:** 5/11/2025 11:48  
-**Updated:** 5/11/2025 12:27  
-**Exported:** 5/11/2025 12:32  
-
-## Response:
-좋아, 이번 실습은 PyFlink에서 **Checkpoint 및 장애 복구 테스트**를 수행하는 고급 실습이야.  
-이제까지와 마찬가지로 다음 네 가지 항목에 따라 전문 정리본을 단계별로 제공할게:
-
-* * *
-
-### ✅ 구성 방식
-
-1.  📘 실습 주제 개요
-    
-2.  🛠️ 코드 구조 및 흐름 해설 + 실행 결과 예시 및 해설
-    
-3.  ⚙️ 전체 코드 + 상세 주석
-    
-4.  📚 추가 설명 및 실무 팁
-    
-
-* * *
-
-지금부터 **1\. 실습 주제 개요**를 먼저 설명할게.
-
-* * *
+# Checkpointing을 이용한 장애 복구
 
 📘 1\. 실습 주제 개요
 ---------------
 
 이번 실습의 목표는 PyFlink에서 **Checkpoint 및 장애 복구 전략이 어떻게 동작하는지를 직접 실험을 통해 확인**하는 것이다.  
-Flink는 장애가 발생하더라도 데이터 손실 없이 다시 실행할 수 있도록 \*\*상태(=State)를 주기적으로 저장(Checkpoint)\*\*하고,  
+Flink는 장애가 발생하더라도 데이터 손실 없이 다시 실행할 수 있도록 **상태(=State)를 주기적으로 저장(Checkpoint)** 하고,  
 예외 발생 시 자동으로 이전 지점부터 복구하는 기능을 제공한다.
 
 이 실습은 `MapFunction` 내에서 **의도적으로 예외를 발생**시키고,  
-Flink의 \*\*고정 지연 재시작 전략(fixed delay restart)\*\*과 **파일 기반 상태 복구 기능**이 작동하는지 테스트하는 구조로 설계됐다.
+Flink의 **고정 지연 재시작 전략(fixed delay restart)** 과 **파일 기반 상태 복구 기능**이 작동하는지 테스트하는 구조로 설계됐다.
 
-* * *
+<br>
 
 ### 실습 시나리오 요약
 
 > CSV → Flink Stream 생성 → 매핑 처리 중 5번째 레코드에서 예외 발생  
 > → Flink가 자동으로 잡 재시작 → 이전 Checkpoint 지점부터 재실행
 
-* * *
+<br>
 
 ### 학습 목표
 
@@ -58,21 +30,11 @@ Flink의 \*\*고정 지연 재시작 전략(fixed delay restart)\*\*과 **파일
 *   상태가 없는 연산(map)에서도 Flink의 복원 동작을 관찰하는 방법 체득
     
 
-* * *
-
-이제 다음 메시지에서는 **2\. 코드 구조 및 흐름 해설 + 실행 결과 예시 및 해설**을 아주 자세히 설명해줄게.  
-바로 이어서 진행할게.
-
-## Response:
-좋아, 이제 **2\. 코드 구조 및 흐름 해설 + 실행 결과 예시 및 해설**을 상세하게 설명할게.  
-이 실습은 Flink의 **Checkpoint 저장, 예외 유도, 자동 복구**의 전 과정을 실제 실행하며 확인하는 고급 실습이야.
-
-* * *
+<br>
+<br>
 
 🛠️ 2\. 코드 구조 및 흐름 해설 + 실행 결과 예시 및 해설
 -------------------------------------
-
-* * *
 
 ### 🧱 1단계: 실행 환경 및 병렬성 설정
 
@@ -86,7 +48,7 @@ env.set_parallelism(1)
 *   병렬성이 1이므로 예외 발생 시 상태 복구 흐름이 단일 스레드 기준으로 확인 가능
     
 
-* * *
+<br>
 
 ### 💾 2단계: Checkpoint 설정
 
@@ -102,7 +64,7 @@ env.get_checkpoint_config().set_checkpoint_storage(FileSystemCheckpointStorage(C
 *   저장 위치는 로컬 파일 시스템의 `/tmp/flink-checkpoints`
     
 
-* * *
+<br>
 
 ### 🔁 3단계: 재시작 전략 설정
 
@@ -117,7 +79,7 @@ env.set_restart_strategy(RestartStrategies.fixed_delay_restart(3, 5000))
 *   재시도 후에도 실패하면 job이 실패 상태로 종료됨
     
 
-* * *
+<br>
 
 ### 📄 4단계: 입력 데이터 로딩
 
@@ -131,7 +93,7 @@ transactions = df[['transaction_id', 'amount']].dropna().values.tolist()
 *   결측값을 제거하고 Flink에 넘기기 위한 리스트 형태로 변환
     
 
-* * *
+<br>
 
 ### ⚠️ 5단계: 예외 유발 MapFunction 구현
 
@@ -156,7 +118,7 @@ class FailingMapFunction(MapFunction):
 *   `time.sleep(1)`은 스트리밍처럼 동작하게 만들기 위한 artificial delay
     
 
-* * *
+<br>
 
 ### 🌊 6단계: Flink DataStream 구성
 
@@ -170,7 +132,7 @@ transaction_stream = transaction_stream.map(FailingMapFunction())
 *   이 함수는 처음에는 정상 작동하다가 5번째 처리에서 강제로 실패함
     
 
-* * *
+<br>
 
 ### 📤 7단계: 출력 및 실행 트리거
 
@@ -184,7 +146,7 @@ env.execute("Checkpoint Recovery Example")
 *   Flink 잡 실행 트리거
     
 
-* * *
+<br>
 
 ### 🖥️ 실행 결과 예시
 
@@ -209,7 +171,7 @@ Retry #1
 ...
 ```
 
-* * *
+<br>
 
 ### 📌 핵심 관찰 포인트
 
@@ -217,20 +179,11 @@ Retry #1
     
 *   마지막으로 성공한 Checkpoint 이후부터 재처리됨 → **데이터 손실 없음**
     
-*   이 실습은 Flink의 \*\*exactly-once 처리 보장과 내결함성(fault tolerance)\*\*을 확인하는 좋은 실험임
+*   이 실습은 Flink의 **exactly-once 처리 보장과 내결함성(fault tolerance)** 을 확인하는 좋은 실험임
     
 
-* * *
-
-다음 메시지에서는 이 실습 코드를 **한 줄도 생략하지 않고**, **모든 구문에 대해 상세한 주석을 포함한 형태로 정리한**  
-**⚙️ 3\. 전체 코드 + 상세 주석**을 제공할게.  
-바로 이어서 진행할게.
-
-## Response:
-좋아, 이제 이번 실습의 **⚙️ 3\. 전체 코드 + 상세 주석**을 제공할게.  
-Checkpoint, 장애 유도, 자동 재시작 메커니즘이 어떻게 작동하는지 파악할 수 있도록 **모든 코드 라인에 상세한 설명**을 달았어.
-
-* * *
+<br>
+<br>
 
 ⚙️ 3\. 전체 코드 + 상세 주석
 --------------------
@@ -306,26 +259,11 @@ if __name__ == "__main__":
     main()
 ```
 
-* * *
-
-이 코드는 Flink에서 \*\*상태 기반 처리의 내결함성(fault tolerance)\*\*이 어떻게 작동하는지를 가장 직접적으로 확인할 수 있는 예제야.  
-의도적으로 실패를 유도한 뒤 Checkpoint를 기반으로 복구가 발생하고, 처리가 이어지는 과정을 실시간으로 볼 수 있어.
-
-다음 메시지에서는 마지막으로 **📚 4\. 추가 설명 및 실무 팁**을 제공할게.  
-실무에서 Checkpoint가 왜 중요한지, 어떻게 설정해야 안정적인 시스템을 만들 수 있는지, 그리고 확장 방향까지 정리해줄게.  
-바로 이어서 진행할게.
-
-## Response:
-좋아, 이제 마지막 항목인 **📚 4\. 추가 설명 및 실무 팁**을 정리해줄게.  
-이번 실습은 Flink의 **내결함성(fault tolerance)** 개념을 실험적으로 학습하는 데 매우 중요하며,  
-실시간 처리 시스템을 운영하는 입장에서는 반드시 이해하고 있어야 하는 핵심 개념이야.
-
-* * *
+<br>
+<br>
 
 📚 4\. 추가 설명 및 실무 팁
 -------------------
-
-* * *
 
 ### ✅ Checkpoint와 장애 복구의 실무적 의미
 
@@ -337,7 +275,7 @@ if __name__ == "__main__":
 
 실무에서는 Kafka, HDFS, S3, RocksDB, PostgreSQL 등 다양한 저장소와 연계하여 상태를 저장하고 복원한다.
 
-* * *
+<br>
 
 ### 🧠 실무에서 자주 겪는 문제 & 해결법
 
@@ -348,7 +286,7 @@ if __name__ == "__main__":
 | ❌ 상태가 복구되지 않고 처음부터 실행됨 | Checkpoint가 실패했거나, disable된 상태 | `env.enable_checkpointing()` 호출 및 경로 설정 확인 |
 | ❌ Flink Job이 반복적으로 실패 | 사용자 코드에서 예외가 계속 발생 | 재시작 횟수 제한 및 `SideOutput` 등을 통한 오류 분리 처리 권장 |
 
-* * *
+<br>
 
 ### 🔄 확장 아이디어
 
@@ -381,7 +319,7 @@ env.get_checkpoint_config().set_checkpoint_storage("s3://flink-checkpoints-bucke
 *   Docker 또는 Flink 클러스터 환경에서 프로세스를 kill하고 복구 시도
     
 
-* * *
+<br>
 
 ### ✅ 실무 적용 시 권장 구성
 
@@ -393,7 +331,7 @@ env.get_checkpoint_config().set_checkpoint_storage("s3://flink-checkpoints-bucke
 | State Backend | Memory → RocksDB로 확장 (대용량 처리 시 필수) |
 | Monitoring | Flink Web UI + Prometheus + Grafana 연동 권장 |
 
-* * *
+<br>
 
 ### ✅ 마무리 요약
 
@@ -403,16 +341,3 @@ env.get_checkpoint_config().set_checkpoint_storage("s3://flink-checkpoints-bucke
     
 *   실무에서는 Kafka 연동, 상태 연산 확대, S3/HDFS 저장소 연계, 클러스터 환경 구축 등을 통해 이 구조를 실질적인 운영 시스템으로 발전시킬 수 있다.
     
-
-* * *
-
-이제 정리본이 완벽하게 마무리됐어.  
-혹시 다음 단계로 **상태 기반 연산의 Checkpoint 복구**나 **Kafka와 Flink의 실시간 장애 복구 실험**,  
-혹은 **Savepoint 기반 수동 상태 이전** 등에 대해 실습해보고 싶다면 언제든지 이어서 도와줄게.
-
-다음으로 어떤 걸 해보고 싶어?
-
-
-
----
-Powered by [ChatGPT Exporter](https://www.chatgptexporter.com)
