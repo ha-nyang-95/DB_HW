@@ -189,11 +189,11 @@ Elasticsearch는 현대 데이터 처리 환경에 적합한 다음과 같은 �
 2.5 Elastic Stack의 구성과 데이터 처리 흐름
 --------------------------------
 
-Elasticsearch는 단독으로도 사용할 수 있지만, \*\*Elastic Stack(구 ELK Stack)\*\*의 일부로 함께 사용하는 경우가 많다.
+Elasticsearch는 단독으로도 사용할 수 있지만, **Elastic Stack(구 ELK Stack)** 의 일부로 함께 사용하는 경우가 많다.
 
 ```
-[데이터 수집] → [버퍼링] → [전처리] → [색인 및 저장] → [시각화 및 분석]
-     Beats       Kafka(Logstash 없음 시 생략)    Logstash        Elasticsearch           Kibana
+[데이터 수집(Beats)] → [버퍼링(Kafka - Logstash 없음 시 생략)] → [전처리(Logstash)]         
+→ [색인 및 저장(Elasticsearch)] → [시각화 및 분석(Kibana)]        
 ```
 
 *   **Beats**: 경량 데이터 수집기 (예: Filebeat – 로그 수집)
@@ -230,7 +230,7 @@ Elasticsearch는 단독으로도 사용할 수 있지만, \*\*Elastic Stack(구 
 3.1 Elastic Stack 데이터 처리 흐름
 ---------------------------
 
-Elasticsearch는 단일 검색 엔진으로도 강력한 기능을 제공하지만, 다양한 데이터 수집 및 시각화 요구를 충족시키기 위해 \*\*Elastic Stack(구 ELK Stack)\*\*이라는 통합 생태계를 제공합니다. 이 스택은 데이터를 수집하고, 가공하고, 저장하며, 사용자에게 시각적으로 보여주는 전 과정을 포괄합니다.
+Elasticsearch는 단일 검색 엔진으로도 강력한 기능을 제공하지만, 다양한 데이터 수집 및 시각화 요구를 충족시키기 위해 **Elastic Stack(구 ELK Stack)** 이라는 통합 생태계를 제공합니다. 이 스택은 데이터를 수집하고, 가공하고, 저장하며, 사용자에게 시각적으로 보여주는 전 과정을 포괄합니다.
 
 Elastic Stack 구성요소는 다음과 같습니다:
 
@@ -712,7 +712,7 @@ PUT /user-index
 6.1 색인(Indexing)과 검색(Querying)
 ------------------------------
 
-Elasticsearch는 \*\*색인(Indexing)\*\*과 \*\*검색(Querying)\*\*을 동시에 지원하는 시스템이다. 색인은 문서를 내부적으로 분석 및 변환하여 검색 가능한 형태로 저장하는 과정이며, 검색은 저장된 문서 중 사용자의 질의에 가장 잘 부합하는 결과를 찾는 과정이다.
+Elasticsearch는 **색인(Indexing)** 과 **검색(Querying)** 을 동시에 지원하는 시스템이다. 색인은 문서를 내부적으로 분석 및 변환하여 검색 가능한 형태로 저장하는 과정이며, 검색은 저장된 문서 중 사용자의 질의에 가장 잘 부합하는 결과를 찾는 과정이다.
 
 ### ✅ 색인(Indexing)
 
@@ -1012,7 +1012,7 @@ POST /user-index/_update/U99999
 7.3 Elasticsearch 문서 업데이트 메커니즘
 ------------------------------
 
-Lucene의 내부 구조상 문서는 \*\*불변(immutable)\*\*이기 때문에 직접 수정은 불가능하다. Elasticsearch는 이를 다음과 같은 방식으로 우회한다:
+Lucene의 내부 구조상 문서는 **불변(immutable)** 이기 때문에 직접 수정은 불가능하다. Elasticsearch는 이를 다음과 같은 방식으로 우회한다:
 
 1.  기존 문서를 `_id`로 조회
     
